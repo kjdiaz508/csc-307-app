@@ -32,13 +32,19 @@ const users = {
 
 const app = express();
 const port = 8000;
+
 const findUserByName = (name) => {
   return users["users_list"].filter(
     (user) => user["name"] === name
   );
 };
-const findUserById = (id) =>
-  users["users_list"].find((user) => user["id"] === id);
+const findUserById = (id) => {
+  return users["users_list"].find((user) => user["id"] === id);
+};
+const addUser = (user) => {
+  users["users_list"].push(user);
+  return user;
+};
 
 app.use(express.json());
 
@@ -67,8 +73,17 @@ app.get("/users/:id", (req, res) => {
   }
 });
 
+app.post("/users", (req, res) => {
+  const userToAdd = req.body;
+  addUser(userToAdd);
+  res.send();
+});
+
+
+
 app.listen(port, () => {
     console.log(
         `Example app listening at http://localhost:${port}`
     );
 });
+

@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 
 const users = {
   users_list: [
@@ -56,6 +57,8 @@ const findUserByNameAndJob = (name, job) => {
     (user) => user["name"] === name && user["job"] === job
   );
 };
+
+app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {

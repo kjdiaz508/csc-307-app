@@ -59,7 +59,7 @@ const findUserByNameAndJob = (name, job) => {
 };
 
 const generateId = () => {
-  return Math.random() * 10000
+  return Math.round(Math.random() * 10000).toString();
 }
 
 app.use(cors());
@@ -103,6 +103,8 @@ app.get("/users/:id", (req, res) => {
 
 app.delete("/users/:id", (req, res) => {
   const id = req.params["id"];
+  console.log(id)
+  console.log(users)
   let result = findUserById(id)
   if (result === undefined) {
     res.status(404).send("Resource not found.");
@@ -113,10 +115,10 @@ app.delete("/users/:id", (req, res) => {
 });
 
 app.post("/users", (req, res) => {
-  const userToAdd = req.body;
-  userToAdd.id = generateId()
-  addUser(userToAdd);
-  res.status(201).send();
+  const userToAdd = {id: generateId(), ...req.body};
+  let user = addUser(userToAdd);
+  /* making sure to send a 201 on successful creation */
+  res.status(201).send(user);
 });
 
 app.listen(port, () => {

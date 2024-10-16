@@ -24,23 +24,41 @@ function MyApp() {
 
   function updateList(person) {
     postUser(person)
-    .then((res) => {
-      if (res.status === 201) {
-        setCharacters([...characters, person])
-      } else {
-        console.log(`Failed to add user, status code: ${response.status}`);
-      }
-    })
-    .catch((error) => {
-      console.log(error);
+      .then((res) => {
+        if (res.status === 201) {
+          return res.json();
+        } else {
+          console.log(`Failed to add user, status code: ${response.status}`);
+        }
+      })
+      .then((user) => setCharacters([...characters, user]))
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  function deleteUser(id) {
+    return fetch(`http://localhost:8000/users/${id}`, {
+      method: "DELETE",
     });
   }
 
   function removeOneCharacter(index) {
-    const updated = characters.filter((character, i) => {
-      return i !== index;
-    });
-    setCharacters(updated);
+    const id = characters[index].id;
+    console.log(id);
+    deleteUser(id).then((res) => {
+      if (res.status === 204) {
+        const updated = characters.filter((character, i) => {
+          return i !== index;
+        });
+        setCharacters(updated);
+        console.log("Success!");
+      } else  if (res.status === 404){
+        console.log("that doesn't exist...");
+      } else {
+        console.log("That didn't work...");
+      }
+    })
   }
 
   useEffect(() => {

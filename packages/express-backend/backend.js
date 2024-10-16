@@ -58,6 +58,10 @@ const findUserByNameAndJob = (name, job) => {
   );
 };
 
+const generateId = () => {
+  return Math.random() * 10000
+}
+
 app.use(cors());
 app.use(express.json());
 
@@ -110,8 +114,9 @@ app.delete("/users/:id", (req, res) => {
 
 app.post("/users", (req, res) => {
   const userToAdd = req.body;
+  userToAdd.id = generateId()
   addUser(userToAdd);
-  res.send();
+  res.status(201).send();
 });
 
 app.listen(port, () => {

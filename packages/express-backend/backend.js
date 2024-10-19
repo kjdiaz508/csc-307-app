@@ -1,62 +1,9 @@
 import express from "express";
 import cors from "cors";
-
-const users = {
-  users_list: [
-    {
-      id: "xyz789",
-      name: "Charlie",
-      job: "Janitor",
-    },
-    {
-      id: "abc123",
-      name: "Mac",
-      job: "Bouncer",
-    },
-    {
-      id: "ppp222",
-      name: "Mac",
-      job: "Professor",
-    },
-    {
-      id: "yat999",
-      name: "Dee",
-      job: "Aspring actress",
-    },
-    {
-      id: "zap555",
-      name: "Dennis",
-      job: "Bartender",
-    },
-  ],
-};
+import userService from "./services/user-service";
 
 const app = express();
 const port = 8000;
-
-const findUserByName = (name) => {
-  return users["users_list"].filter(
-    (user) => user["name"] === name
-  );
-};
-const findUserByJob = (job) => {
-  return users["users_list"].filter((user) => user["job"] === job);
-};
-const findUserById = (id) => {
-  return users["users_list"].find((user) => user["id"] === id);
-};
-const addUser = (user) => {
-  users["users_list"].push(user);
-  return user;
-};
-const deleteUser = (user) => {
-  users["users_list"] = users["users_list"].filter((bleh) => bleh !== user);
-}
-const findUserByNameAndJob = (name, job) => {
-  return users["users_list"].filter(
-    (user) => user["name"] === name && user["job"] === job
-  );
-};
 
 const generateId = () => {
   return Math.round(Math.random() * 10000).toString();
@@ -75,16 +22,16 @@ app.get("/users", (req, res) => {
 
   if (name !== undefined && job !== undefined) {
     // Find users by both name and job
-    let result = findUserByNameAndJob(name, job);
+    let result = userService.findUser(name, job);
     result = { users_list: result };
     res.send(result);
   } else if (name !== undefined) {
     // Find users by name only
-    let result = findUserByName(name);
+    let result = userService.findUserByName(name);
     result = { users_list: result };
     res.send(result);
   } else if (job !== undefined) {
-    let result = findUserByJob(job);
+    let result = userService.findUserByJob(job);
     result = { users_list: result };
   } else {
     res.send(users)
@@ -93,7 +40,7 @@ app.get("/users", (req, res) => {
 
 app.get("/users/:id", (req, res) => {
   const id = req.params["id"];
-  let result = findUserById(id);
+  let result = userService.findUserById(id);
   if (result === undefined) {
     res.status(404).send("Resource not found.");
   } else {
@@ -105,18 +52,18 @@ app.delete("/users/:id", (req, res) => {
   const id = req.params["id"];
   console.log(id)
   console.log(users)
-  let result = findUserById(id)
+  let result = userService.findUserById(id)
   if (result === undefined) {
     res.status(404).send("Resource not found.");
   } else {
-    deleteUser(result);
+    userService.deleteUser(result);
     res.status(204).send(result);
   }
 });
 
 app.post("/users", (req, res) => {
   const userToAdd = {id: generateId(), ...req.body};
-  let user = addUser(userToAdd);
+  let user = userService.addUser(userToAdd);
   /* making sure to send a 201 on successful creation */
   res.status(201).send(user);
 });
